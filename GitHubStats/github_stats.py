@@ -18,8 +18,12 @@ def d_resp(repo,code):
 user = input('请输入你要请求的用户：')
 resp = requests.get(f'https://api.github.com/users/{user}/repos',timeout=10)
 
-if resp.status_code != 200:
+if resp.status_code == 404:
         exit("没找到这个用户，请检查用户名")
+elif resp.status_code == 403:
+        exit("访问次数超出限制，请等一会儿再试")
+if resp.status_code != 200:
+        exit(f"请求失败，状态码：{resp.status_code}")
 
 resp1 = json.loads(resp.text)
 
