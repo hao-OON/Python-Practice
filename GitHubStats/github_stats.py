@@ -17,6 +17,10 @@ def d_resp(repo,code):
         return new_resp
 user = input('请输入你要请求的用户：')
 resp = requests.get(f'https://api.github.com/users/{user}/repos',timeout=10)
+
+if resp.status_code != 200:
+        exit("没找到这个用户，请检查用户名")
+
 resp1 = json.loads(resp.text)
 
 li = []
