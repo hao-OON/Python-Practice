@@ -24,3 +24,29 @@
 
 
 
+### GitHubStats/
+一个从 GitHub 获取某个人的全部仓库列表的程序，并且把它存入repos.json文件里。
+
+用到 requests，json，datetime 模块。
+
+运行该程序：
+
+```
+cd GitHubStats
+python github_stats.py
+```
+
+### DeepSeekChat/
+一个调用deepseek-flash的程序，可以直接在命令行里和它进行带着记忆的连续对话。
+
+用到 requests 模块，try/except 语句，open() 函数。
+
+运行该程序：
+
+在运行前要在DeepSeekChat所在目录创建deepseek_key.txt文件，然后准备一个自己的key，并把它复制到
+创建的文件里。
+
+```
+cd DeepSeekChat
+python deepseek_chat.py
+```
