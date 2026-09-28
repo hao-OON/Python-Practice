@@ -36,6 +36,8 @@ cd GitHubStats
 python github_stats.py
 ```
 
+
+
 ### DeepSeekChat/
 一个调用deepseek-flash的程序，可以直接在命令行里和它进行带着记忆的连续对话。
 
@@ -50,3 +52,19 @@ python github_stats.py
 cd DeepSeekChat
 python deepseek_chat.py
 ```
+
+
+
+### BookCrawler/
+一个可以爬取books.toscrape.com中1000本书的程序，并把它们存入book_crawler_json.json文件里。
+
+用到了 urljoin 函数，requests，bs4模块。
+
+运行该程序：
+
+```
+cd BookCrawler
+python book_crawler.py
+```
+
+在写这个项目的过程中，我遇到的最大的问题是url的拼接，因为每一个循环的下一页的地址不一样，所以拼接的基准也不一样，然后我查了 urljoin 的文档，判断出了基准应该跟着当前页走，解决了这个问题。在最后一页的时候，返回的下一页的地址的值为空，外层循环看见空，最终结束循环。
