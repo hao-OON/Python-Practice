@@ -4,4 +4,6 @@ repos.json
 .idea
 book_crawler_json.json
 deepseek_key.txt
+quotes_crawler_json.json
+quotes_author_json.json
 .workbuddy/
