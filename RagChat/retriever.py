@@ -26,9 +26,10 @@ def retrieve(query, documents):
             hits.append(hit)
     sorted_hits = sorted(hits, key=lambda hit: hit['count'], reverse=True)
     return sorted_hits
-
-query = input()
-documents = load_documents()
-sorted_hits = retrieve(query, documents)
-for hit in sorted_hits[0:3]:
-    print(hit['count'],len(hit['text']),hit['text'][0:70])
+if __name__ == '__main__':
+    query = input()
+    documents = load_documents()
+    sorted_hits = retrieve(query, documents)
+    for hit in sorted_hits[0:3]:
+        # print(hit['count'],len(hit['text']),hit['text'][0:70])
+        print(hit['text'][0:70])
