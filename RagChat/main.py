@@ -22,8 +22,10 @@ def generate_answer(context,query):
     body = {"model": "deepseek-flash",
             "messages": messages}
     try:
-        rep = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body,timeout=5)
+        rep = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body,timeout=25)
     except requests.exceptions.ConnectionError:
+        return None
+    except requests.exceptions.Timeout:
         return None
 
     data = rep.json()
@@ -38,7 +40,7 @@ while True:
     sorted_hits = retriever.retrieve(query,documents)
     context = ''
     i = 0
-    for hit in sorted_hits[0:3]:
+    for hit in sorted_hits[0:len(sorted_hits)]:
         i += 1
         context += str(i) ; context += '.' ; context += hit['text']
         context += '\n'
