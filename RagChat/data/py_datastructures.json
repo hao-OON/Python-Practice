@@ -1,0 +1,13 @@
+[
+  "list.append(value, /)\n在列表末尾添加一项。 类似于 a[len(a):] = [x]。",
+  "list.extend(iterable, /)\n通过添加来自 iterable 的所有项来扩展列表。 类似于 a[len(a):] = iterable。",
+  "list.insert(index, value, /)\n在指定位置插入元素。第一个参数是插入元素的索引，因此，a.insert(0, x) 在列表开头插入元素， a.insert(len(a), x) 等同于 a.append(x) 。",
+  "list.remove(value, /)\n从列表中移除第一个值为 value 的条目。 如果无此条目则会引发 ValueError。",
+  "list.pop(index=-1, /)\n移除列表中给定位置上的条目，并返回该条目。 如果未指定索引号，则 a.pop() 将移除并返回列表中的最后一个条目。 如果列表为空或索引号在列表索引范围之外则会引发 IndexError。",
+  "list.clear()\n移除列表中的所有项。 类似于 del a[:]。",
+  "list.index(value[, start[, stop]])\n返回列表中 value 首次出现所在的从零开始的索引。 如无此条目则会引发 ValueError。\n可选参数 start 和 end 是切片符号，用于将搜索限制为列表的特定子序列。返回的索引是相对于整个序列的开始计算的，而不是 start 参数。",
+  "list.count(value, /)\n返回列表中 value 出现的次数。",
+  "list.sort(*, key=None, reverse=False)\n原地排序列表中的元素 (要了解自定义排序参数，详见 sorted())。",
+  "list.reverse()\n翻转列表中的元素。",
+  "list.copy()\n返回列表的浅拷贝。 类似于 a[:]。"
+]

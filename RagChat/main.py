@@ -1,5 +1,5 @@
 import requests
-import retriever
+import vector_retriever as retriever
 
 def generate_answer(context,query):
     with open("deepseek_key.txt","r",encoding="UTF-8") as f:
@@ -22,7 +22,7 @@ def generate_answer(context,query):
     body = {"model": "deepseek-flash",
             "messages": messages}
     try:
-        rep = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body)
+        rep = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body,timeout=5)
     except requests.exceptions.ConnectionError:
         return None
 

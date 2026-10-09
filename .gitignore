@@ -8,3 +8,5 @@ quotes_crawler_json.json
 quotes_author_json.json
 __pycache__/
 .workbuddy/
+embed_key.txt
+py_vecs.json
