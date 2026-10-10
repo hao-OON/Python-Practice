@@ -22,14 +22,14 @@ def generate_answer(context,query):
     body = {"model": "deepseek-flash",
             "messages": messages}
     try:
-        rep = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body,timeout=25)
+        response = requests.post("https://api.deepseek.com/chat/completions",headers=headers,json = body,timeout=25)
     except requests.exceptions.ConnectionError:
         return None
     except requests.exceptions.Timeout:
         return None
 
-    data = rep.json()
-    return data['choices'][0]['message']['content']
+    result = response.json()
+    return result['choices'][0]['message']['content']
 
 documents = retriever.load_documents()
 while True:
@@ -37,15 +37,15 @@ while True:
     if query == "exit":
         print("再见")
         break
-    sorted_hits = retriever.retrieve(query,documents)
+    hits = retriever.retrieve(query,documents)
     context = ''
-    i = 0
-    for hit in sorted_hits[0:len(sorted_hits)]:
-        i += 1
-        context += str(i) ; context += '.' ; context += hit['text']
+    number = 0
+    for hit in hits:
+        number += 1
+        context += str(number) ; context += '.' ; context += hit['text']
         context += '\n'
-    data = generate_answer(context,query)
-    if data is None:
+    answer = generate_answer(context,query)
+    if answer is None:
         print("网络不稳定，请再尝试一下")
         continue
-    print(data)
+    print(answer)

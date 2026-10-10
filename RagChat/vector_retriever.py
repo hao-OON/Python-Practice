@@ -8,14 +8,14 @@ def load_documents():
     return documents
 
 def build_index(documents):
-    new_count_ = []
-    for i in documents:
-        count_ = to_vector(i)
-        new_count_.append(count_)
-    return new_count_
+    vectors = []
+    for text in documents:
+        vector = to_vector(text)
+        vectors.append(vector)
+    return vectors
 
 
-def to_vector(input_):
+def to_vector(text):
     with open("embed_key.txt","r",encoding="UTF-8") as f:
         api_key = f.read()
 
@@ -23,51 +23,51 @@ def to_vector(input_):
                "Content-Type":"application/json"}
 
     body =  {"model": "embedding-3",
-             "input": input_}
+             "input": text}
 
     try:
-        rep = requests.post("https://open.bigmodel.cn/api/paas/v4/embeddings",headers=headers,json = body,timeout=3)
+        response = requests.post("https://open.bigmodel.cn/api/paas/v4/embeddings",headers=headers,json = body,timeout=3)
     except requests.exceptions.ConnectionError:
         exit("请稍后再试")
-    data = rep.json()
-    return data['data'][0]['embedding']
+    except requests.exceptions.Timeout :
+        exit("请求超时")
+    payload = response.json()
+    return payload['data'][0]['embedding']
 
 def retrieve(query, documents):
-    shuz = to_vector(query)
-    index_ = {} ; data = {}
-    data['time'] = os.path.getmtime("data/py_datastructures.json")
-    data['size'] = os.path.getsize("data/py_datastructures.json")
+    query_vector = to_vector(query)
+    index = {} ; stamp = {}
+    stamp['time'] = os.path.getmtime("data/py_datastructures.json")
+    stamp['size'] = os.path.getsize("data/py_datastructures.json")
     if os.path.exists("data/py_vecs.json"):
         with open( "data/py_vecs.json", "r", encoding="utf-8") as f:
-            index_ = json.load(f)
-        if index_['head'] != data:
-            index_['head'] = data
-            index_['body'] = build_index(documents)
+            index = json.load(f)
+        if index['head'] != stamp:
+            index['head'] = stamp
+            index['body'] = build_index(documents)
             with open("data/py_vecs.json","w",encoding="utf-8") as f:
-                json.dump(index_,f)
+                json.dump(index,f)
     else:
-        index_['head'] = data
-        index_['body'] = build_index(documents)
+        index['head'] = stamp
+        index['body'] = build_index(documents)
         with open("data/py_vecs.json","w",encoding="utf-8") as f:
-            json.dump(index_,f)
-    documentss = [] ; m = 0
-    for i in index_['body']:
-        document = {}
-        document['text'] = documents[m]
-        m += 1
-        n = 0 ; sum_ = 0
-        for j in i:
-            sum_ += j * shuz[n]
-            n += 1
-        document['score'] = sum_
-        documentss.append(document)
-    sorted_documentss = sorted(documentss, key=lambda documentss: documentss['score'], reverse=True)
-    return sorted_documentss
+            json.dump(index,f)
+    hits = []
+    for vector, text in zip(index['body'], documents):
+        hit = {}
+        hit['text'] = text
+        score = 0
+        for value, query_value in zip(vector, query_vector):
+            score += value * query_value
+        hit['score'] = score
+        hits.append(hit)
+    ranked = sorted(hits, key=lambda hit: hit['score'], reverse=True)
+    return ranked
 
 if __name__ == '__main__':
-    docs   = load_documents()
+    documents = load_documents()
     query = input("请输入你想查找的东西:")
-    now_documents = retrieve(query, docs)
-    print(len(now_documents))
-    for i in now_documents:
-        print(i)
+    hits = retrieve(query, documents)
+    print(len(hits))
+    for hit in hits:
+        print(hit)
