@@ -34,15 +34,24 @@ def to_vector(input_):
 
 def retrieve(query, documents):
     shuz = to_vector(query)
+    index_ = {} ; data = {}
+    data['time'] = os.path.getmtime("data/py_datastructures.json")
+    data['size'] = os.path.getsize("data/py_datastructures.json")
     if os.path.exists("data/py_vecs.json"):
         with open( "data/py_vecs.json", "r", encoding="utf-8") as f:
             index_ = json.load(f)
+        if index_['head'] != data:
+            index_['head'] = data
+            index_['body'] = build_index(documents)
+            with open("data/py_vecs.json","w",encoding="utf-8") as f:
+                json.dump(index_,f)
     else:
-        index_ = build_index(documents)
+        index_['head'] = data
+        index_['body'] = build_index(documents)
         with open("data/py_vecs.json","w",encoding="utf-8") as f:
             json.dump(index_,f)
     documentss = [] ; m = 0
-    for i in index_:
+    for i in index_['body']:
         document = {}
         document['text'] = documents[m]
         m += 1
