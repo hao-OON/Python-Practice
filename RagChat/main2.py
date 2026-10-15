@@ -52,6 +52,9 @@ while True:
     if query == "exit":
         print("再见")
         break
+    if query.strip() == "":
+        print("你没有输入内容，请重新输入")
+        continue
     hits = retriever.retrieve(query,documents)
     context = ''
     number = 0
@@ -80,8 +83,13 @@ while True:
         print(json.loads(answer['tool_calls'][0]['function']['arguments'])['command'])
         decision = input("要执行吗(y/n):")
         if decision == "y":
-            run_result = subprocess.run(json.loads(answer['tool_calls'][0]['function']['arguments'])['command'],shell=True,capture_output=True,text=True)
-            messages.append({"role": "tool", "tool_call_id": answer['tool_calls'][0]['id'],'content':run_result.stdout})
+            command = json.loads(answer['tool_calls'][0]['function']['arguments'])['command']
+            run_result = subprocess.run(command,shell=True,capture_output=True)
+            try:
+                output = run_result.stdout.decode("utf-8")
+            except UnicodeDecodeError:
+                output = run_result.stdout.decode("gbk", errors="replace")
+            messages.append({"role": "tool", "tool_call_id": answer['tool_calls'][0]['id'],'content': output})
             answer = generate_answer(messages)
             print(answer['content'])
         else:
