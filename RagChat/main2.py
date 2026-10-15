@@ -88,7 +88,14 @@ while True:
                 output = run_result.stdout.decode("utf-8")
             except UnicodeDecodeError:
                 output = run_result.stdout.decode("gbk", errors="replace")
-            messages.append({"role": "tool", "tool_call_id": answer['tool_calls'][0]['id'],'content': output})
+            if run_result.returncode == 0:
+                tool_result = output
+            else:
+                tool_result = (output
+                               + "\n\n[命令执行失败] 退出码 " + str(run_result.returncode)
+                               + "\n[错误输出] " + run_result.stderr.decode("gbk", errors="replace")
+                               + "\n（请如实告诉用户这条命令执行失败了，不要根据空输出推测目录内容）")
+            messages.append({"role": "tool", "tool_call_id": answer['tool_calls'][0]['id'],'content': tool_result})
             answer = generate_answer(messages)
             print(answer['content'])
         else:
