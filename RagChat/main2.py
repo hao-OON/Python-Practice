@@ -77,7 +77,6 @@ while True:
     if answer is None:
         print("网络不稳定，请再尝试一下")
         continue
-    # print(json.dumps(answer,indent=2))
     if 'tool_calls' in answer:
         print(answer['tool_calls'][0]['function']['name'])
         print(json.loads(answer['tool_calls'][0]['function']['arguments'])['command'])
