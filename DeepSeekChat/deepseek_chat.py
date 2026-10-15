@@ -23,7 +23,6 @@ while True:
     except requests.exceptions.ConnectionError:
         exit("请稍后再试")
 
-
     if rep.status_code == 400:
         exit("你的箱子内容写错了，请检查")
     elif rep.status_code == 401:
