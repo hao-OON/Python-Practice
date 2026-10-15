@@ -2,6 +2,12 @@ import json
 import requests
 import os
 
+# ===== 配置：换服务只改这三行 =====
+EMBED_URL = "https://api.siliconflow.cn/v1/embeddings"
+EMBED_MODEL = "BAAI/bge-m3"
+EMBED_KEY_PATH = "embed_key.txt"
+
+
 def load_documents():
     with open("data/py_datastructures.json", "r", encoding="utf-8") as f:
         documents = json.load(f)
@@ -16,21 +22,22 @@ def build_index(documents):
 
 
 def to_vector(text):
-    with open("embed_key.txt","r",encoding="UTF-8") as f:
+    with open(EMBED_KEY_PATH,"r",encoding="UTF-8") as f:
         api_key = f.read()
 
     headers = {"Authorization":"Bearer " + api_key,
                "Content-Type":"application/json"}
 
-    body =  {"model": "embedding-3",
+    body =  {"model": EMBED_MODEL,
              "input": text}
 
     try:
-        response = requests.post("https://open.bigmodel.cn/api/paas/v4/embeddings",headers=headers,json = body,timeout=3)
+        response = requests.post(EMBED_URL,headers=headers,json = body,timeout=15)
     except requests.exceptions.ConnectionError:
         exit("请稍后再试")
     except requests.exceptions.Timeout :
         exit("请求超时")
+    response.raise_for_status()
     payload = response.json()
     return payload['data'][0]['embedding']
 
