@@ -72,17 +72,30 @@ while True:
 5. 不要告诉我这些句子是谁说的、出自哪里。    '''},
         {"role":"user","content":f"资料是：{context}，问题是：{query}"},
     ]
-    answer = generate_answer(messages)
-    messages.append(answer)
-    if answer is None:
-        print("网络不稳定，请再尝试一下")
-        continue
-    if 'tool_calls' in answer:
-        print(answer['tool_calls'][0]['function']['name'])
-        print(json.loads(answer['tool_calls'][0]['function']['arguments'])['command'])
-        decision = input("要执行吗(y/n):")
-        if decision == "y":
-            command = json.loads(answer['tool_calls'][0]['function']['arguments'])['command']
+    rounds = 0
+    while True:
+        answer = generate_answer(messages)
+        if answer is None:
+            print("网络不稳定，请再尝试一下")
+            break
+        messages.append(answer)
+        if 'tool_calls' not in answer:
+            print(answer['content'])
+            break
+        rounds += 1
+        if rounds > 5:
+            print("已经连续执行了 5 轮工具调用，先停下，避免无限循环")
+            break
+        for call in answer['tool_calls']:
+            command = json.loads(call['function']['arguments'])['command']
+            print(call['function']['name'])
+            print(command)
+            decision = input("要执行吗(y/n):")
+            if decision != "y":
+                print("操作取消")
+                messages.append({"role": "tool", "tool_call_id": call['id'],
+                                 'content': "用户拒绝执行这条命令。"})
+                continue
             run_result = subprocess.run(command,shell=True,capture_output=True)
             try:
                 output = run_result.stdout.decode("utf-8")
@@ -95,10 +108,4 @@ while True:
                                + "\n\n[命令执行失败] 退出码 " + str(run_result.returncode)
                                + "\n[错误输出] " + run_result.stderr.decode("gbk", errors="replace")
                                + "\n（请如实告诉用户这条命令执行失败了，不要根据空输出推测目录内容）")
-            messages.append({"role": "tool", "tool_call_id": answer['tool_calls'][0]['id'],'content': tool_result})
-            answer = generate_answer(messages)
-            print(answer['content'])
-        else:
-            print("操作取消")
-    else:
-        print(answer['content'])
+            messages.append({"role": "tool", "tool_call_id": call['id'],'content': tool_result})
